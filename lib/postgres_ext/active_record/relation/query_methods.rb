@@ -82,7 +82,7 @@ module ActiveRecord
         if rel.right.respond_to?(:val)
           return if rel.right.val.is_a?(Hash)
           rel.right = Arel::Nodes.build_quoted({new_right_name => rel.right.val},
-                                               rel.left)
+           rel.left)
         else
           return if rel.right.is_a?(Hash)
           rel.right = {new_right_name => rel.right }
@@ -94,7 +94,7 @@ module ActiveRecord
 
       def assoc_from_related_table(rel)
         @scope.klass.reflect_on_association(rel.left.relation.name.to_sym) ||
-          @scope.klass.reflect_on_association(rel.left.relation.name.singularize.to_sym)
+        @scope.klass.reflect_on_association(rel.left.relation.name.singularize.to_sym)
       end
 
       def substitute_comparisons(opts, rest, arel_node_class, method)
@@ -137,39 +137,39 @@ module ActiveRecord
 
     [:with].each do |name|
       class_eval <<-CODE, __FILE__, __LINE__ + 1
-       def #{name}_values                   # def select_values
-         @values[:#{name}] || []            #   @values[:select] || []
-       end                                  # end
-                                            #
-       def #{name}_values=(values)          # def select_values=(values)
-         raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
-         @values[:#{name}] = values         #   @values[:select] = values
-       end                                  # end
-      CODE
-    end
+      def #{name}_values                   # def select_values
+       @values[:#{name}] || []            #   @values[:select] || []
+     end                                  # end
+     #
+     def #{name}_values=(values)          # def select_values=(values)
+       raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
+       @values[:#{name}] = values         #   @values[:select] = values
+     end                                  # end
+     CODE
+   end
 
-    [:rank, :recursive].each do |name|
-      class_eval <<-CODE, __FILE__, __LINE__ + 1
-        def #{name}_value=(value)            # def readonly_value=(value)
-          raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
-          @values[:#{name}] = value          #   @values[:readonly] = value
-        end                                  # end
+   [:rank, :recursive].each do |name|
+    class_eval <<-CODE, __FILE__, __LINE__ + 1
+    def #{name}_value=(value)            # def readonly_value=(value)
+      raise ImmutableRelation if @loaded #   raise ImmutableRelation if @loaded
+      @values[:#{name}] = value          #   @values[:readonly] = value
+    end                                  # end
 
-        def #{name}_value                    # def readonly_value
-          @values[:#{name}]                  #   @values[:readonly]
-        end                                  # end
-      CODE
-    end
+    def #{name}_value                    # def readonly_value
+      @values[:#{name}]                  #   @values[:readonly]
+    end                                  # end
+    CODE
+  end
 
-    def with(opts = :chain, *rest)
-      if opts == :chain
-        WithChain.new(spawn)
-      elsif opts.blank?
-        self
-      else
-        spawn.with!(opts, *rest)
-      end
+  def with(opts = :chain, *rest)
+    if opts == :chain
+      WithChain.new(spawn)
+    elsif opts.blank?
+      self
+    else
+      spawn.with!(opts, *rest)
     end
+  end
 
     def with!(opts = :chain, *rest) # :nodoc:
       if opts == :chain
@@ -230,15 +230,15 @@ module ActiveRecord
     def build_rank(arel, rank_window_options)
       unless arel.projections.count == 1 && Arel::Nodes::Count === arel.projections.first
         rank_window = case rank_window_options
-                      when :order
-                        arel.orders
-                      when Symbol
-                        table[rank_window_options].asc
-                      when Hash
-                        rank_window_options.map { |field, dir| table[field].send(dir) }
-                      else
-                        Arel::Nodes::SqlLiteral.new "(#{rank_window_options})"
-                      end
+        when :order
+          arel.orders
+        when Symbol
+          table[rank_window_options].asc
+        when Hash
+          rank_window_options.map { |field, dir| table[field].send(dir) }
+        else
+          Arel::Nodes::SqlLiteral.new "(#{rank_window_options})"
+        end
 
         unless rank_window.blank?
           rank_node = Arel::Nodes::SqlLiteral.new 'rank()'
@@ -255,6 +255,6 @@ module ActiveRecord
       end
     end
 
-    alias_method_chain :build_arel, :extensions
+    #alias_method_chain :build_arel, :extensions
   end
 end
